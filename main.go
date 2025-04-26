@@ -2,11 +2,15 @@ package main
 
 import (
 	"users/actions"
+	"users/db"
 
 	"github.com/labstack/echo/v4"
 )
 
 func main() {
+	dbh := db.UsersDBHandler{}
+	dbh.RunMigrations()
+
 	e := echo.New()
 
 	// Routes
