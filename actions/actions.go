@@ -2,6 +2,8 @@ package actions
 
 import (
 	"net/http"
+	"strconv"
+	"users/db"
 
 	"github.com/labstack/echo/v4"
 )
@@ -23,24 +25,52 @@ func GetUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-// GetUser returns a single user by ID
 func GetUser(c echo.Context) error {
-	id := c.Param("id")
-	for _, user := range users {
-		if user.ID == id {
-			return c.JSON(http.StatusOK, user)
-		}
+	// Extract the chat ID from the URL path
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid user ID")
 	}
-	return c.JSON(http.StatusNotFound, "User not found")
+
+	// Create a new database handler
+	dbh := db.UsersDBHandler{}
+	dbh.ConnectPg()
+	defer dbh.Conn.Close()
+
+	// Get the user from the database
+	user, err := dbh.GetUser(id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, "User not found")
+	}
+
+	// Return the user as JSON
+	return c.JSON(http.StatusOK, user)
 }
 
 // CreateUser adds a new user
 func CreateUser(c echo.Context) error {
-	var newUser User
+	var newUser struct {
+		ChatID       int64  `json:"chatID"`
+		TelegramID   int64  `json:"telegramID"`
+		FirstName    string `json:"firstName"`
+		LastName     string `json:"lastName"`
+		LanguageCode string `json:"languageCode"`
+		Username     string `json:"username"`
+	}
+
 	if err := c.Bind(&newUser); err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid input")
 	}
-	users = append(users, newUser)
+
+	dbh := db.UsersDBHandler{}
+	dbh.ConnectPg()
+	defer dbh.Conn.Close()
+
+	if err := dbh.CreateUser(newUser.ChatID, newUser.TelegramID, newUser.FirstName, newUser.LastName, newUser.LanguageCode, newUser.Username); err != nil {
+		return c.JSON(http.StatusInternalServerError, "Failed to create user")
+	}
+
 	return c.JSON(http.StatusCreated, newUser)
 }
 
