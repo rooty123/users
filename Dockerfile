@@ -4,7 +4,7 @@ FROM golang:1.24 AS builder
 WORKDIR /src/
 
 # Копируем исходники в контейнер
-COPY ./main.go /src/
+COPY . /src/
 
 # Скачиваем все зависимости
 RUN go get ./...
