@@ -7,7 +7,6 @@ WORKDIR /src/
 COPY ./main.go /src/
 
 # Скачиваем все зависимости
-RUN go mod download
 RUN go get ./...
 
 # Собираем бинарный файл
