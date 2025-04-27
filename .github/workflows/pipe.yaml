@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+    runs-on: self-hosted  # Use the latest Ubuntu runner
 
     steps:
       - name: Checkout code
