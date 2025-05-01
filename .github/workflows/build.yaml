@@ -27,3 +27,18 @@ jobs:
         file: Dockerfile
         push: true
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/micro-users:latest
+
+  deploy:
+    runs-on: self-hosted
+    container: bitnami/kubectl:latest
+    needs: build
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Apply Manifest
+        run: kubectl apply -f manifest.yaml
+
+      - name: Restart Deployment
+        run: kubectl rollout restart deployment user-deployment
