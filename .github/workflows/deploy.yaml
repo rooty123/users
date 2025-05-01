@@ -1,0 +1,16 @@
+name: Deploy
+on: [push]
+jobs:
+  deploy:
+    runs-on: self-hosted
+    container: bitnami/kubectl:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Apply Manifest
+        run: kubectl apply -f manifest.yaml
+
+      - name: Restart Deployment
+        run: kubectl rollout restart deployment user-deployment
