@@ -23,5 +23,6 @@ COPY ./migrations /src/
 # Копируем бинарный файл из этапа builder
 COPY --from=builder /src/app .
 EXPOSE 8080
+RUN ls -l /src
 # Запускаем приложение 
 ENTRYPOINT ["./app"]
