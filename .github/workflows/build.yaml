@@ -33,7 +33,7 @@ jobs:
     # container: bitnami/kubectl:latest
     container:
       image: bitnami/kubectl:latest 
-      options: --user 1001
+      options: --user 1000
     needs: build
 
     steps:
