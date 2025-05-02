@@ -16,7 +16,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
 FROM alpine:latest  
 
 # Устанавливаем рабочую директорию
-WORKDIR /root/
+WORKDIR /
 
 COPY ./migrations /migrations
 
