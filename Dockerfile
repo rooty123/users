@@ -18,7 +18,7 @@ FROM alpine:latest
 # Устанавливаем рабочую директорию
 WORKDIR /root/
 
-COPY ./migrations .
+COPY ./migrations /src/
 
 # Копируем бинарный файл из этапа builder
 COPY --from=builder /src/app .
