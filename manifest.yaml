@@ -15,6 +15,13 @@ spec:
       containers:
       - name: user-container
         image: microsm/micro-users
+        env:
+        - name: DB_HOST
+          value: "postgresql"
+        - name: DB_NAME
+          value: "users"
+        - name: DB_PASSWORD
+          value: "MmRgHe7Q2E"
         ports:
         - containerPort: 8080
 ---
