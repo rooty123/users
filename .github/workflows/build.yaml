@@ -31,9 +31,9 @@ jobs:
   deploy:
     runs-on: self-hosted
     # container: bitnami/kubectl:latest
-    container:
+    # container:
       # image: bitnami/kubectl:latest 
-      options: --user 1000
+      # options: --user 1000
     needs: build
 
     steps:
