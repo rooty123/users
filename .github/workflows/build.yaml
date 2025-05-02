@@ -44,7 +44,7 @@ jobs:
           set-safe-directory: false
 
       - name: Apply Manifest
-        run: sleep 400 && kubectl apply -f manifest.yaml
+        run: kubectl apply -f manifest.yaml
 
       - name: Restart Deployment
         run: kubectl rollout restart deployment user-deployment
