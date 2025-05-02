@@ -41,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Apply Manifest
-        run: kubectl apply -f manifest.yaml
+        run: sleep 400 && kubectl apply -f manifest.yaml
 
       - name: Restart Deployment
         run: kubectl rollout restart deployment user-deployment
