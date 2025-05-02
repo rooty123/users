@@ -30,7 +30,10 @@ jobs:
 
   deploy:
     runs-on: self-hosted
-    container: bitnami/kubectl:latest
+    # container: bitnami/kubectl:latest
+    container:
+      image: bitnami/kubectl:latest  # Or bitnami/kubectl:latest if you need kubectl
+      options: --user root
     needs: build
 
     steps:
