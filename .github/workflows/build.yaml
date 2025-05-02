@@ -39,6 +39,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          clean: false
+          set-safe-directory: false
 
       - name: Apply Manifest
         run: sleep 400 && kubectl apply -f manifest.yaml
