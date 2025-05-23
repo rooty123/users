@@ -5,6 +5,7 @@ import (
 	"users/db"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rooty123/libs/logger"
 )
 
 func main() {
@@ -21,5 +22,8 @@ func main() {
 	e.DELETE("/users/:id", actions.DeleteUser)
 
 	// Start server
+	logger.WithFields(map[string]interface{}{
+		"event": "program_started",
+	}).Info("Program started")
 	e.Logger.Fatal(e.Start(":8080"))
 }
