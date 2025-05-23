@@ -6,11 +6,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user-app
+      app: users
   template:
     metadata:
       labels:
-        app: user-app
+        app: users
     spec:
       containers:
       - name: user-container
@@ -31,7 +31,7 @@ metadata:
   name: user-service
 spec:
   selector:
-    app: user-app
+    app: users
   ports:
   - port: 8080
     targetPort: 8080
