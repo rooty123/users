@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"users/db"
+	"users/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -22,6 +23,17 @@ var users = []User{
 
 // GetUsers returns a list of users
 func GetUsers(c echo.Context) error {
+	dbh := db.UsersDBHandler{}
+	dbh.ConnectPg()
+	defer dbh.Conn.Close()
+
+	users, err := dbh.ListUsers()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, "Failed to get users")
+	}
+
+	// Update users gauge
+	metrics.UsersGauge.Set(float64(len(users)))
 	return c.JSON(http.StatusOK, users)
 }
 
@@ -71,33 +83,62 @@ func CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Failed to create user")
 	}
 
+	// Update users gauge
+	users, _ := dbh.ListUsers()
+	metrics.UsersGauge.Set(float64(len(users)))
+
 	return c.JSON(http.StatusCreated, newUser)
 }
 
 // UpdateUser updates an existing user
 func UpdateUser(c echo.Context) error {
-	id := c.Param("id")
-	var updatedUser User
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid user ID")
+	}
+
+	var updatedUser struct {
+		FirstName    string `json:"firstName"`
+		LastName     string `json:"lastName"`
+		LanguageCode string `json:"languageCode"`
+		Username     string `json:"username"`
+	}
+
 	if err := c.Bind(&updatedUser); err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid input")
 	}
-	for i, user := range users {
-		if user.ID == id {
-			users[i] = updatedUser
-			return c.JSON(http.StatusOK, updatedUser)
-		}
+
+	dbh := db.UsersDBHandler{}
+	dbh.ConnectPg()
+	defer dbh.Conn.Close()
+
+	if err := dbh.UpdateUser(id, updatedUser.FirstName, updatedUser.LastName, updatedUser.LanguageCode, updatedUser.Username); err != nil {
+		return c.JSON(http.StatusInternalServerError, "Failed to update user")
 	}
-	return c.JSON(http.StatusNotFound, "User not found")
+
+	return c.JSON(http.StatusOK, updatedUser)
 }
 
 // DeleteUser deletes a user by ID
 func DeleteUser(c echo.Context) error {
-	id := c.Param("id")
-	for i, user := range users {
-		if user.ID == id {
-			users = append(users[:i], users[i+1:]...)
-			return c.NoContent(http.StatusNoContent)
-		}
+	idStr := c.Param("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid user ID")
 	}
-	return c.JSON(http.StatusNotFound, "User not found")
+
+	dbh := db.UsersDBHandler{}
+	dbh.ConnectPg()
+	defer dbh.Conn.Close()
+
+	if err := dbh.DeleteUser(id); err != nil {
+		return c.JSON(http.StatusNotFound, "User not found")
+	}
+
+	// Update users gauge
+	users, _ := dbh.ListUsers()
+	metrics.UsersGauge.Set(float64(len(users)))
+
+	return c.NoContent(http.StatusNoContent)
 }
