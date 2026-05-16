@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"users/actions"
 	"users/db"
 	"users/metrics"
@@ -30,8 +31,13 @@ func main() {
 	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	// Start server
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "8080"
+	}
 	logger.WithFields(map[string]any{
 		"event": "program_started",
+		"port":  port,
 	}).Info("Program started")
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + port))
 }
