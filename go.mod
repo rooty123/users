@@ -5,11 +5,10 @@ go 1.23.0
 toolchain go1.24.2
 
 require (
-	github.com/go-pg/pg/v10 v10.14.0
+	github.com/go-pg/pg/v10 v10.15.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rooty123/libs v0.0.0-20250523153301-12daecf64347
-
 )
 
 require (
