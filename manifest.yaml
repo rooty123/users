@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: user-container
-        image: microsm/micro-users
+        image: microsm/micro-users:__IMAGE_TAG__
         env:
         - name: DB_HOST
           value: "postgresql"
